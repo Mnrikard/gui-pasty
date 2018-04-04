@@ -1,10 +1,10 @@
 {
   "name": "gpasty",
   "version": "1.0.0",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "description": "Pasty for people who don't like command lines",
-  "author": "GitHub",
-  "main": "./index.js",
+  "author": "Matthew Rikard <mnrikard@gmail.com>",
+  "main": "main.js",
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron .",
@@ -38,13 +38,10 @@
       "icon": "build/icon.ico"
     }
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/Mnrikard/gui-pasty",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "gui",
+    "pasty"
   ],
   "devDependencies": {
     "electron": "^1.8.4",

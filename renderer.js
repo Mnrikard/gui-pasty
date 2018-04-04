@@ -8,7 +8,7 @@ var ipc = require('electron').ipcRenderer;
 var gpFunc = document.getElementById('gp-func');
 var gpParms = document.getElementById('gp-parms');
 
-var editors = require("../editors/");
+var editors = require("pasty-clipboard-editor/editors");
 var names = editors.getAllFuncNames();
 var i;
 for(i=0;i<names.length;i++){
@@ -63,7 +63,7 @@ function runFunction(){
 		parms.push(document.getElementById("gpParm"+i).value);
 		i++;
 	}
-	require('../index.js').editClipboard(parms);
+	require('pasty-clipboard-editor').editClipboard(parms);
 }
 
 
