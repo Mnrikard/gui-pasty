@@ -45,6 +45,9 @@
   ],
   "devDependencies": {
     "electron": "^1.8.4",
-    "electron-builder": "^20.8.1"
+    "electron-builder": "^20.10.0"
+  },
+  "dependencies": {
+    "pasty-clipboard-editor": "^1.1.6"
   }
 }

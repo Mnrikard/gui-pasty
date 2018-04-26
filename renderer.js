@@ -7,6 +7,7 @@ var ipc = require('electron').ipcRenderer;
 
 var gpFunc = document.getElementById('gp-func');
 var gpParms = document.getElementById('gp-parms');
+var log = document.getElementById('log');
 
 var editors = require("pasty-clipboard-editor/editors");
 var names = editors.getAllFuncNames();
@@ -18,12 +19,20 @@ for(i=0;i<names.length;i++){
 	gpFunc.appendChild(opt);
 }
 
-gpFunc.onchange = function(){
-	var i;
-	var fn = editors.getEditor(getSelectedFunction(), false);
+function clearParmArea(){
 	while(gpParms.childNodes[0]){
 		gpParms.removeChild(gpParms.childNodes[0]);
 	}
+}
+
+exports.functionChosen = function(){
+	var i;
+	var fn = editors.getEditor(getSelectedFunction(), false);
+	fn.calledName = getSelectedFunction();
+	if(fn.updateHelpText){fn.updateHelpText();}
+
+	clearParmArea();
+
 	gpParms.innerText = fn.oneLiner;
 
 	var tb = document.createElement("table");
@@ -33,6 +42,7 @@ gpFunc.onchange = function(){
 		var tr = document.createElement("tr");
 		tb.appendChild(tr);
 		var lbl = document.createElement("td");
+		lbl.className = "label";
 		lbl.appendChild(document.createTextNode(fn.parms[i].name));
 		tr.appendChild(lbl);
 		var inpCell = document.createElement("td");
@@ -46,15 +56,36 @@ gpFunc.onchange = function(){
 
 	var btn = document.createElement("button");
 	btn.appendChild(document.createTextNode("Run"));
+	btn.className = "round";
+	btn.id = "runButton";
 	gpParms.appendChild(btn);
 	btn.addEventListener("click", runFunction);
 }
 
 function getSelectedFunction(){
-	return gpFunc.options[gpFunc.selectedIndex].value;
+	return gpFunc.value;
+}
+
+function editClipboard(parms){
+	try{
+		var content = "";
+		const {clipboard} = require('electron')
+		try{
+			content = clipboard.readText();
+		} catch(e) {
+			clipboard.writeText(content);
+		}
+		var newContent = require('pasty-clipboard-editor/editorRunner').handleInput(content, parms);
+		clipboard.writeText(newContent);
+	} catch(err) {
+		log.value += err+"\r\n";
+	}
+
 }
 
 function runFunction(){
+	try{
+	log.value = "running function\r\n";
 	var parms = [];
 	parms.push(getSelectedFunction());
 	var i=0;
@@ -63,7 +94,16 @@ function runFunction(){
 		parms.push(document.getElementById("gpParm"+i).value);
 		i++;
 	}
-	require('pasty-clipboard-editor').editClipboard(parms);
+	log.value += "parms:"+parms.join(",")+"\r\n";
+	editClipboard(parms);
+	log.value += "edited clipboard\r\n";
+	} catch(e){
+		log.value += e+"\r\n";
+	}
+	clearParmArea();
+	gpFunc.value = "";
+
+	document.getElementById('gp-func').select();
 }
 
 
