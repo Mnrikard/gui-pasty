@@ -50,9 +50,7 @@ exports.functionChosen = function(){
 			var inp = document.createElement("input");
 			inp.type="text";
 			inp.id = "gpParm"+i;
-			if(fn.parms[i].defaultValue){
-				inp.value = fn.parms[i].defaultValue.replace(/\n/,"\\n").replace(/\t/,"\\t");
-			}
+			inp.value = fn.parms[i].defaultValue.replace(/\n/,"\\n").replace(/\t/,"\\t");
 			inpCell.appendChild(inp);
 			tr.appendChild(inpCell);
 		}

@@ -38,24 +38,20 @@ exports.functionChosen = function(){
 	var tb = document.createElement("table");
 	gpParms.appendChild(tb);
 
-	if(fn.parms){
-		for(i=0;i<fn.parms.length;i++){
-			var tr = document.createElement("tr");
-			tb.appendChild(tr);
-			var lbl = document.createElement("td");
-			lbl.className = "label";
-			lbl.appendChild(document.createTextNode(fn.parms[i].name));
-			tr.appendChild(lbl);
-			var inpCell = document.createElement("td");
-			var inp = document.createElement("input");
-			inp.type="text";
-			inp.id = "gpParm"+i;
-			if(fn.parms[i].defaultValue){
-				inp.value = fn.parms[i].defaultValue.replace(/\n/,"\\n").replace(/\t/,"\\t");
-			}
-			inpCell.appendChild(inp);
-			tr.appendChild(inpCell);
-		}
+	for(i=0;i<fn.parms.length;i++){
+		var tr = document.createElement("tr");
+		tb.appendChild(tr);
+		var lbl = document.createElement("td");
+		lbl.className = "label";
+		lbl.appendChild(document.createTextNode(fn.parms[i].name));
+		tr.appendChild(lbl);
+		var inpCell = document.createElement("td");
+		var inp = document.createElement("input");
+		inp.type="text";
+		inp.id = "gpParm"+i;
+		inp.value = fn.parms[i].defaultValue;
+		inpCell.appendChild(inp);
+		tr.appendChild(inpCell);
 	}
 
 	var btn = document.createElement("button");

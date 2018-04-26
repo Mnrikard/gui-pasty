@@ -6,8 +6,6 @@
 <style type="text/css">
 	body {background:#f9f9f9;}
 	input.rounded {
-		border-top-left-radius:15px;
-		border-bottom-left-radius:15px;
 		height:30px;
 	}
 	.doublewide{
@@ -20,10 +18,6 @@
 		background:white;
 		color:black;
 		height:36px;
-		border-top-right-radius: 18px;
-		border-bottom-right-radius: 18px;
-		border-top-left-radius: 18px;
-		border-bottom-left-radius: 18px;
 		padding-top:0px;
 		padding-bottom:0px;
 		margin-top:0px;
@@ -34,7 +28,7 @@
 	.round {
 		border:1px solid black;
 		height:36px;
-		border-radius: 18px;
+		border-radius: 8px;
 
 		padding-top:0px;
 		padding-bottom:0px;
@@ -48,14 +42,21 @@
 		color:black;
 		border:1px solid black;
 		height:36px;
-		border-radius: 18px;
+		border-radius: 8px;
 		padding-top:0px;
 		padding-bottom:0px;
 		margin-top:0px;
-		margin-bottom:0px;		
+		margin-bottom:0px;
 	}
 
-	#functionDropDown{width:300px;background: white;border:solid black 2px;border-radius: 5px;max-height:300px;overflow:auto;}
+	#functionDropDown{
+		width:300px;
+		background: white;
+		border:solid black 2px;
+		border-radius: 5px;
+		max-height:300px;
+		overflow:auto;
+	}
 	.selection-item{border-bottom:solid brown 1px;}
 	.selectedFunction {background: #000099; color:white;}
 
@@ -73,6 +74,9 @@ function getFuncs(searchTerm){
 			output.push(el);
 		}
 	});
+	if(output.length === 0){
+		output.push("No function found matching "+searchTerm);
+	}
 	return output;
 }
 
@@ -116,7 +120,7 @@ function dropFunc(){
 	d.body.appendChild(overdiv);
 	var pos = getPos(d.getElementById('gp-func'));
 	pos.y += d.getElementById('gp-func').offsetHeight;
-	pos.x += 20;
+//	pos.x += 20;
 	overdiv.style.position = "absolute";
 	overdiv.style.top = pos.y+"px";
 	overdiv.style.left = pos.x+"px";
@@ -184,9 +188,9 @@ function chooseFuncs(dir){
 </script>
 	</head>
 	<body>
-		<input class="rounded doublewide" type="text" id="gp-func" />
+		<input class="rounded doublewide" type="text" id="gp-func" onfocus="clearFunctionDropDown()" onclick="clearFunctionDropDown()" onblur="clearFunctionDropDown()" />
 		<input type="button" class="search" onclick="dropFunc()" value="🔍" />
-		<input type="button" class="search" onclick="functionChosen()" value="▶️" />
+		<input type="button" class="search" id="getParmsButton" onclick="functionChosen()" value="▶️" />
 		<div id="gp-parms"></div>
 
 		<textarea id="log" style="display:none;"></textarea>
@@ -200,10 +204,17 @@ functionChosen = function(){
 	var funcParms = d.getElementById('gp-parms').getElementsByTagName("input");
 	if(funcParms && funcParms[0]){
 		funcParms[0].select();
+	} else{
+		d.getElementById('getParmsButton').focus();
 	}
 }
 
 d.getElementById('gp-func').select();
+
+let { remote } = require('electron')
+let win = remote.getCurrentWindow()
+
+win.setBounds({ width: 425, height: 425 });
 		</script>
 	</body>
 </html>
