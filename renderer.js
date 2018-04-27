@@ -82,14 +82,13 @@ function editClipboard(parms){
 		var newContent = require('pasty-clipboard-editor/editorRunner').handleInput(content, parms);
 		clipboard.writeText(newContent);
 	} catch(err) {
-		log.value += err+"\r\n";
+		console.log(err);
 	}
 
 }
 
 function runFunction(){
 	try{
-	log.value = "running function\r\n";
 	var parms = [];
 	parms.push(getSelectedFunction());
 	var i=0;
@@ -98,11 +97,9 @@ function runFunction(){
 		parms.push(document.getElementById("gpParm"+i).value);
 		i++;
 	}
-	log.value += "parms:"+parms.join(",")+"\r\n";
 	editClipboard(parms);
-	log.value += "edited clipboard\r\n";
 	} catch(e){
-		log.value += e+"\r\n";
+		console.log(e);
 	}
 	clearParmArea();
 	gpFunc.value = "";

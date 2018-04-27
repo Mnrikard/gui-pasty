@@ -12,7 +12,12 @@
 		width:300px !important;
 	}
 
-	td.label{text-align:right; font-size:14px; font-family:Arial;}
+	td.label{
+		text-align:right;
+		font-size:14px;
+		font-family:Arial;
+		text-shadow: 2px 2px #fff;
+	}
 
 	input[type=text]{
 		background:white;
@@ -64,6 +69,15 @@
 <script type="text/javascript">
 
 var d = document;
+
+var console = {};
+console.log = function(str){
+	var lg = d.getElementById('log');
+	lg.value += str+'\r\n';
+	lg.style.display="inline";
+};
+
+require("pasty-clipboard-editor/stringHelpers.js").keepWindowOpen = function(){};
 
 function getFuncs(searchTerm){
 	var funcs = require('pasty-clipboard-editor/editors').getAllFuncNames();
@@ -200,6 +214,9 @@ function chooseFuncs(dir){
 var backend = require('./renderer.js')
 
 functionChosen = function(){
+	var lg = d.getElementById('log');
+	lg.value = '';
+	lg.style.display="none";
 	backend.functionChosen();
 	var funcParms = d.getElementById('gp-parms').getElementsByTagName("input");
 	if(funcParms && funcParms[0]){
