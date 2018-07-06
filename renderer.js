@@ -4,7 +4,6 @@
 //
 var ipc = require('electron').ipcRenderer;
 
-
 var gpFunc = document.getElementById('gp-func');
 var gpParms = document.getElementById('gp-parms');
 var log = document.getElementById('log');
@@ -12,6 +11,7 @@ var log = document.getElementById('log');
 var editors = require("pasty-clipboard-editor/editors");
 var names = editors.getAllFuncNames();
 var i;
+
 for(i=0;i<names.length;i++){
 	var opt = document.createElement("option");
 	opt.appendChild(document.createTextNode(names[i]));
@@ -29,6 +29,9 @@ exports.functionChosen = function(){
 	var i;
 	var fn = editors.getEditor(getSelectedFunction(), false);
 	fn.calledName = getSelectedFunction();
+	if (fn.getParms){
+		fn.getParms();
+	}
 	if(fn.updateHelpText){fn.updateHelpText();}
 
 	clearParmArea();
@@ -50,6 +53,7 @@ exports.functionChosen = function(){
 			var inp = document.createElement("input");
 			inp.type="text";
 			inp.id = "gpParm"+i;
+			inp.className = "functionParameter";
 			if(fn.parms[i].defaultValue){
 				inp.value = fn.parms[i].defaultValue.replace(/\n/,"\\n").replace(/\t/,"\\t");
 			}
@@ -87,17 +91,57 @@ function editClipboard(parms){
 
 }
 
+function getRecentFuncs(){
+	var recentCalls = localStorage.getItem("recentPastyFunctions");
+	if(!recentCalls){
+		return [];
+	}
+	return JSON.parse(recentCalls);
+}
+
+Array.prototype.pluck = function(i){
+	return this.splice(i,1);
+};
+
+Array.prototype.equals = function(arr2){
+	if(this.length !== arr2.length) { return false; }
+	for(var p=0;p<this.length;p++){
+		if(this[p] !== arr2[p]){
+			return false;
+		}
+	}
+	return true;
+};
+
+function rememberFunction(parms){
+	var recentCalls = getRecentFuncs();
+
+	recentCalls.forEach(function(itm,i){
+		if(itm.equals(parms)){
+			recentCalls.pluck(i);
+		}
+	});
+
+	while(recentCalls.length >= 25){
+		recentCalls.pop();
+	}
+	recentCalls.unshift(parms);
+
+	localStorage.setItem("recentPastyFunctions",JSON.stringify(recentCalls));
+}
+
 function runFunction(){
 	try{
-	var parms = [];
-	parms.push(getSelectedFunction());
-	var i=0;
+		var parms = [];
+		parms.push(getSelectedFunction());
+		var i=0;
 
-	while(document.getElementById("gpParm"+i)){
-		parms.push(document.getElementById("gpParm"+i).value);
-		i++;
-	}
-	editClipboard(parms);
+		while(document.getElementById("gpParm"+i)){
+			parms.push(document.getElementById("gpParm"+i).value);
+			i++;
+		}
+		rememberFunction(parms);
+		editClipboard(parms);
 	} catch(e){
 		console.log(e);
 	}
@@ -105,6 +149,30 @@ function runFunction(){
 	gpFunc.value = "";
 
 	document.getElementById('gp-func').select();
+	exports.showPastFunctions();
 }
 
-
+exports.showPastFunctions = function(){
+	var container = document.getElementById('previousFuncs');
+	while(container.childNodes[0]){
+		container.removeChild(container.childNodes[0]);
+	}
+	var funcs = getRecentFuncs();
+	funcs.forEach(function(itm){
+		if(!itm || itm.length === 0){
+			return;
+		}
+		var p = document.createElement("p");
+		p.className = "likeLink";
+		p.onclick = function(){
+			document.getElementById('gp-func').value = itm[0];
+			document.getElementById('getParmsButton').onclick();
+			var parmEls = document.getElementsByClassName('functionParameter');
+			for(var i=0;i<parmEls.length;i++){
+				parmEls[i].value = itm[i+1];
+			}
+		}
+		p.appendChild(document.createTextNode(itm.join(" ")));
+		container.appendChild(p);
+	});
+}
