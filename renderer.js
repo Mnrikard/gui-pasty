@@ -51,6 +51,35 @@ function clearParmArea(){
 	}
 }
 
+function getSwitchValue(){
+	var switches = d.getElementsByName("gp-switches");
+	var i;
+	var output = "-";
+	for(i=0;i<switches.length;i++){
+		if(switches[i].value === "m" && switches[i].checked){
+			output += "m";
+		}
+		if(switches[i].value === "I" && switches[i].checked){
+			output += "I";
+		}
+		if(switches[i].value === "g"){
+			if(switches[i].checked){
+				output += "g";
+			} else {
+				output += "G";
+			}
+		}
+		if(switches[i].value === "r" && switches[i].checked){
+			output += "r";
+		}
+	}
+
+	if(output !== "-"){
+		return output;
+	}
+	return null;
+}
+
 function getSelectedFunction(){
 	return gpFunc.value;
 }
@@ -96,6 +125,12 @@ function runFunction(){
 			parms.push(d.getElementById("gpParm"+i).value);
 			i++;
 		}
+
+		var switches = getSwitchValue();
+		if(switches){
+			parms.push(switches);
+		}
+
 		rememberFunction(parms);
 		editClipboard(parms);
 	} catch(e){
@@ -106,6 +141,41 @@ function runFunction(){
 
 	document.getElementById('gp-func').select();
 	exports.showPastFunctions();
+}
+
+function addSwitches(switches,tbl){
+	if(!switches || switches === ""){
+		return;
+	}
+
+	var tr,td,cb,rx,lbl;
+	var available = [
+		{name:"Multiline",indicator:"m",checked:false},
+		{name:"Case Sensitive",indicator:"I",checked:false},
+		{name:"Global",indicator:"g",checked:true},
+		{name:"Reverse",indicator:"r",checked:false}
+	];
+
+	tr = d.createElement("tr");
+	td = d.createElement("td");
+	td.colspan = "2";
+	tr.appendChild(td);
+	tbl.appendChild(tr);
+	available.forEach(function(el){
+		rx = new RegExp(el.indicator,"ig");
+		if(rx.test(switches)){
+			lbl = d.createElement("label");
+			td.appendChild(lbl);
+			cb = d.createElement("input");
+			cb.type = "checkbox";
+			cb.name = "gp-switches";
+			cb.value = el.indicator;
+			cb.checked = el.checked ? "checked" : null;
+			lbl.appendChild(cb);
+			lbl.appendChild(d.createTextNode(el.name));
+			td.appendChild(d.createElement("br"));
+		}
+	});
 }
 
 exports.functionChosen = function(){
@@ -151,6 +221,8 @@ exports.functionChosen = function(){
 	btn.id = "runButton";
 	gpParms.appendChild(btn);
 	btn.addEventListener("click", runFunction);
+
+	addSwitches(fn.allowedSwitches, tb);
 }
 
 function getSelectedFunction(){
