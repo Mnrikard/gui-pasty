@@ -201,6 +201,21 @@
 			}
 		}
 	}
+
+	function loadLocalStyle(){
+		var fs = require("fs");
+		var settings = require("pasty-clipboard-editor/settings.js").settings;
+		if(settings.localStyleSheet){
+			var style = document.createElement("style");
+			style.type="text/css";
+			if(fs.existsSync(settings.localStyleSheet)){
+				var rules = fs.readFileSync(settings.localStyleSheet);
+				style.innerText = rules;
+			}
+			document.getElementsByTagName("head")[0].appendChild(style);
+		}
+	}
+	loadLocalStyle();
 </script>
 	</head>
 	<body>
