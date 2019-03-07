@@ -44,10 +44,11 @@
     "pasty"
   ],
   "devDependencies": {
-    "electron": "^1.8.4",
-    "electron-builder": "^20.28.4"
+    "electron": "^1.8.8",
+    "electron-builder": "^20.38.5"
   },
   "dependencies": {
-    "pasty-clipboard-editor": "^1.1.7"
+    "npm": "^6.9.0",
+    "pasty-clipboard-editor": "^1.1.9"
   }
 }

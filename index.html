@@ -181,6 +181,7 @@
 	function chooseFuncs(dir){
 		var funcDiv = d.getElementById('functionDropDown');
 		var i,selectedI=-1;
+
 		if(funcDiv){
 			var items = funcDiv.childNodes;
 			for(i=0;i<items.length;i++){
@@ -197,9 +198,17 @@
 
 			if(items[selectedI]){
 				items[selectedI].className += " selectedFunction";
+				items[selectedI].scrollIntoView();
 				d.getElementById('gp-func').value = items[selectedI].innerText;
 			}
 		}
+	}
+
+	function resolveHomePath(filepath){
+		if (filepath.length > 0 && filepath[0] === '~') {
+			return path.join(process.env.HOME, filepath.slice(1));
+		}
+		return filepath;
 	}
 
 	function loadLocalStyle(){
@@ -208,9 +217,12 @@
 		if(settings.localStyleSheet){
 			var style = document.createElement("style");
 			style.type="text/css";
-			if(fs.existsSync(settings.localStyleSheet)){
-				var rules = fs.readFileSync(settings.localStyleSheet);
+			try{
+				var stylePath = resolveHomePath(settings.localStyleSheet);
+				var rules = fs.readFileSync(stylePath);
 				style.innerText = rules;
+			} catch (e) {
+				alert("error loading user stylesheet:"+e);
 			}
 			document.getElementsByTagName("head")[0].appendChild(style);
 		}
