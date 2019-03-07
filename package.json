@@ -49,6 +49,6 @@
   },
   "dependencies": {
     "npm": "^6.9.0",
-    "pasty-clipboard-editor": "^1.1.9"
+    "pasty-clipboard-editor": "^1.2.0"
   }
 }
